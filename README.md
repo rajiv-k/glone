@@ -1,7 +1,8 @@
 # glone
 
 
-## build
+
+## Build
 
 ```console
 $ make
