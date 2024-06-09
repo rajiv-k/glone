@@ -12,6 +12,16 @@ import (
 	"strings"
 )
 
+const (
+	usage = `usage: glone <url>
+
+Examples:
+
+glone git@github.com:rajiv/glone.git
+glone https://github.com/rajiv/glone.git
+`
+)
+
 var (
 	gitSshUrl   = regexp.MustCompile(`^git@([a-zA-Z0-9._-]+):([a-zA-Z0-9./._-]+)(?:\?||$)(.*)$`)
 	gitHttpsUrl = regexp.MustCompile(`^https://([a-zA-Z0-9._-]+)/([a-zA-Z0-9./._-]+)(?:\?||$)(.*)$`)
@@ -92,12 +102,12 @@ func clone(r *RepoInfo) error {
 }
 
 func main() {
-	flags := flag.NewFlagSet("clone", flag.ContinueOnError)
-	if err := flags.Parse(os.Args[1:]); err != nil {
-		fmt.Printf("ERROR: could not parse flags: %v\n", err)
-		os.Exit(1)
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, usage)
 	}
-	_ = flags
+
+	flag.Parse()
+
 	repoInfo, err := parse(os.Args[1])
 	if err != nil {
 		panic(err)

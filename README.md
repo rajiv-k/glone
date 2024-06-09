@@ -12,6 +12,6 @@ $ make
 ## Run
 
 ```console
-$ glone git@github.com/rajiv-k/glone.git
+$ glone git@github.com:rajiv-k/glone.git
 
 ```
