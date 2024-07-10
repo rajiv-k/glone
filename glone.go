@@ -54,7 +54,7 @@ func parse(repoUrl string) (*RepoInfo, error) {
 	first := matches[0]
 
 	owner := filepath.Dir(first[2])
-	repo := strings.TrimRight(filepath.Base(first[2]), ".git")
+	repo := strings.TrimSuffix(filepath.Base(first[2]), ".git")
 
 	info := &RepoInfo{
 		Scheme:   scheme,
