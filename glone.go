@@ -13,10 +13,9 @@ import (
 )
 
 const (
-	usage = `usage: glone <url>
-
-Examples:
-
+	usageHeader = "usage: glone [OPTIONS...] <url>"
+	usageFooter = `
+EXAMPLES:
 glone git@github.com:rajiv/glone.git
 glone https://github.com/rajiv/glone.git
 `
@@ -25,6 +24,8 @@ glone https://github.com/rajiv/glone.git
 var (
 	gitSshUrl   = regexp.MustCompile(`^git@([a-zA-Z0-9._-]+):([a-zA-Z0-9./._-]+)(?:\?||$)(.*)$`)
 	gitHttpsUrl = regexp.MustCompile(`^https://([a-zA-Z0-9._-]+)/([a-zA-Z0-9./._-]+)(?:\?||$)(.*)$`)
+	Version     = "unknown"
+	versionFlag = false
 )
 
 type RepoInfo struct {
@@ -101,12 +102,34 @@ func clone(r *RepoInfo) error {
 	return nil
 }
 
+func usage() {
+	var builder strings.Builder
+	fmt.Fprintln(&builder, "OPTIONS:")
+	flag.VisitAll(func(f *flag.Flag) {
+		fmt.Fprintf(&builder, "\t--%v:\t\t%v", f.Name, f.Usage)
+	})
+	fmt.Printf("%v\n\n%v\n%v\n", usageHeader, builder.String(), usageFooter)
+}
+
+func version() string {
+	return fmt.Sprintf("glone version %v", Version)
+}
+
 func main() {
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, usage)
-	}
+	flag.BoolVar(&versionFlag, "version", false, "Print version and exit")
+	flag.Usage = usage
 
 	flag.Parse()
+
+	if versionFlag {
+		fmt.Println(version())
+		os.Exit(0)
+	}
+
+	if len(os.Args) < 2 {
+		usage()
+		os.Exit(0)
+	}
 
 	repoInfo, err := parse(os.Args[1])
 	if err != nil {
